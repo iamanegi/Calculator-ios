@@ -9,8 +9,9 @@ import SwiftUI
 
 struct KeyView: View {
     
-    @State var value = "0"
-    @State var runningNumber = 0
+    @State var value = 0
+    @State var firstNumber = 0
+    @State var secondNumber = 0
     @State var currentOperation: Operation = .none
     @State private var changeColor = false
     
@@ -31,7 +32,7 @@ struct KeyView: View {
                     .frame(width: 350, height: 280)
                     .animation(Animation.easeInOut.speed(0.17).repeatForever(),value: changeColor)
                     .onAppear(perform: {self.changeColor.toggle()})
-                .overlay(Text(value).bold().font(.system(size: 100)).foregroundColor(.black))
+                .overlay(Text("\(value)").bold().font(.system(size: 100)).foregroundColor(.black))
             }.padding()
             Spacer()
             ForEach(buttons, id: \.self) { row in
@@ -73,34 +74,28 @@ struct KeyView: View {
         switch button {
         case .add:
             self.currentOperation = .add
-            self.runningNumber = Int(self.value) ?? 0
-            self.value = "0"
+            self.value = 0
         case .subtract:
             self.currentOperation = .subtract
-            self.runningNumber = Int(self.value) ?? 0
-            self.value = "0"
+            self.value = 0
         case .multiply:
             self.currentOperation = .multiply
-            self.runningNumber = Int(self.value) ?? 0
-            self.value = "0"
+            self.value = 0
         case .divide:
             self.currentOperation = .divide
-            self.runningNumber = Int(self.value) ?? 0
-            self.value = "0"
+            self.value = 0
         case .equal:
-            let runningValue = self.runningNumber
-            let currentValue = Int(self.value) ?? 0
-            
             switch self.currentOperation {
-            case .add: self.value = "\(runningValue + currentValue)"
-            case .subtract: self.value = "\(runningValue - currentValue)"
-            case .multiply: self.value = "\(runningValue * currentValue)"
-            case .divide: self.value = "\(runningValue / currentValue)"
+            case .add: self.value = self.firstNumber + self.secondNumber
+            case .subtract: self.value = self.firstNumber - self.secondNumber
+            case .multiply: self.value = self.firstNumber * self.secondNumber
+            case .divide: self.value = self.firstNumber / self.secondNumber
             case .none: break
             }
+            self.firstNumber = self.value
         case .clear:
-            self.value = "0"
-            self.runningNumber = 0
+            self.value = 0
+            self.firstNumber = 0
             self.currentOperation = .none
         case .decimal:
             break
@@ -110,11 +105,16 @@ struct KeyView: View {
             break
         default:
             let number = button.rawValue
-            if self.value == "0" {
-                self.value = number
+            if self.value == 0 {
+                self.value = Int(number) ?? 0
             }
             else {
-                self.value = "\(self.value)\(number)"
+                self.value = Int("\(self.value)\(number)") ?? 0
+            }
+            if self.currentOperation == .none {
+                self.firstNumber = self.value
+            } else {
+                self.secondNumber = self.value
             }
         }
         

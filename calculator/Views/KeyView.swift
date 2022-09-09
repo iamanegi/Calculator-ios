@@ -98,6 +98,7 @@ struct KeyView: View {
         case .clear:
             self.value = "0"
             self.firstNumber = 0
+            self.secondNumber = 0
             self.currentOperation = .none
         case .decimal:
             let currentValue = self.value
@@ -119,6 +120,9 @@ struct KeyView: View {
                 self.secondNumber = Double(self.value) ?? 0
             }
         case .percent:
+            if self.value == "0" {
+                break
+            }
             let currentValue = Double(self.value) ?? 0
             self.value = "\(currentValue/100)"
             if self.currentOperation == .none {

@@ -119,7 +119,13 @@ struct KeyView: View {
                 self.secondNumber = Double(self.value) ?? 0
             }
         case .percent:
-            break
+            let currentValue = Double(self.value) ?? 0
+            self.value = "\(currentValue/100)"
+            if self.currentOperation == .none {
+                self.firstNumber = Double(self.value) ?? 0
+            } else {
+                self.secondNumber = Double(self.value) ?? 0
+            }
         default:
             let number = button.rawValue
             if self.value == "0" {

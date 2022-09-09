@@ -85,6 +85,7 @@ struct KeyView: View {
             self.currentOperation = .divide
             self.value = "0"
         case .equal:
+            print("\(self.firstNumber) | \(self.secondNumber)");
             switch self.currentOperation {
             case .add: self.value = "\(self.firstNumber + self.secondNumber)"
             case .subtract: self.value = "\(self.firstNumber - self.secondNumber)"
@@ -93,7 +94,7 @@ struct KeyView: View {
             case .none: break
             }
             self.firstNumber = Double(self.value) ?? 0
-            self.value = sanitiseExtraZeros(num: self.value)
+            self.value = sanitiseResult(num: self.value)
         case .clear:
             self.value = "0"
             self.firstNumber = 0
@@ -104,7 +105,19 @@ struct KeyView: View {
                 self.value = "\(currentValue)."
             }
         case .negative:
-            break
+            let currentValue = self.value
+            if currentValue == "0" {
+                break
+            }else if currentValue[currentValue.startIndex] == "-" {
+                self.value.removeFirst()
+            } else {
+                self.value = "-\(currentValue)"
+            }
+            if self.currentOperation == .none {
+                self.firstNumber = Double(self.value) ?? 0
+            } else {
+                self.secondNumber = Double(self.value) ?? 0
+            }
         case .percent:
             break
         default:
@@ -124,8 +137,12 @@ struct KeyView: View {
         
     }
     
-    func sanitiseExtraZeros(num: String) -> String {
-        return String(format: "%g", Double(num) ?? 0)
+    func sanitiseResult(num: String) -> String {
+        var value = String(format: "%g", Double(num) ?? 0)
+        if value == "-0" {
+            value.removeFirst()
+        }
+        return value
     }
 }
 
